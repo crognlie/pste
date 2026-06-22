@@ -1,0 +1,15 @@
+pste.example.com {
+    # Omit query strings from logs so /?key=<key> isn't recorded
+    log {
+        format filter {
+            wrap json
+            fields {
+                request>uri replace {
+                    regexp "\\?.*$" ""
+                }
+            }
+        }
+    }
+
+    reverse_proxy localhost:8000
+}

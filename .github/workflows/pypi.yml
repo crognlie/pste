@@ -1,0 +1,52 @@
+name: PyPI
+
+on:
+  push:
+    tags: ["v*"]
+
+jobs:
+  publish-server:
+    runs-on: ubuntu-latest
+    environment: pypi
+    permissions:
+      id-token: write  # OIDC trusted publisher — no token required
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      - name: Build pste-server
+        run: |
+          pip install hatchling
+          cd server && python -m hatchling build
+
+      - name: Publish pste-server
+        uses: pypa/gh-action-pypi-publish@release/v1
+        with:
+          packages-dir: server/dist/
+
+  publish-client:
+    runs-on: ubuntu-latest
+    environment: pypi
+    permissions:
+      id-token: write
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      - name: Build pste
+        run: |
+          pip install hatchling
+          cd client && python -m hatchling build
+
+      - name: Publish pste
+        uses: pypa/gh-action-pypi-publish@release/v1
+        with:
+          packages-dir: client/dist/

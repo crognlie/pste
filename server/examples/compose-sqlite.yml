@@ -1,0 +1,13 @@
+services:
+  pste:
+    image: ghcr.io/crognlie/pste:latest
+    ports:
+      - "8000:8000"
+    volumes:
+      - pste-data:/app/data
+    environment:
+      BASE_URL: https://pste.example.com
+      MAX_PASTE_BYTES: 1048576
+
+volumes:
+  pste-data:

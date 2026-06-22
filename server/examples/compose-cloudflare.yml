@@ -1,0 +1,21 @@
+# Expose pste via Cloudflare Tunnel — no open ports or public IP required.
+#
+# Setup:
+# 1. Create a tunnel at https://one.dash.cloudflare.com
+# 2. Point the public hostname (e.g. pste.example.com) to http://pste:8000
+# 3. Set TUNNEL_TOKEN below from the dashboard
+
+services:
+  pste:
+    image: ghcr.io/crognlie/pste:latest
+    environment:
+      BASE_URL: https://pste.example.com
+      # No ports: exposed — cloudflared reaches pste directly on the Docker network
+
+  cloudflared:
+    image: cloudflare/cloudflared:latest
+    command: tunnel --no-autoupdate run
+    environment:
+      TUNNEL_TOKEN: your-tunnel-token-here
+    depends_on:
+      - pste

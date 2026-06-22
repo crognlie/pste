@@ -1,0 +1,28 @@
+services:
+  pste:
+    image: ghcr.io/crognlie/pste:latest
+    ports:
+      - "8000:8000"
+    environment:
+      STORAGE_BACKEND: postgresql
+      DATABASE_URL: postgresql://pste:changeme@db/pste
+      BASE_URL: https://pste.example.com
+    depends_on:
+      db:
+        condition: service_healthy
+
+  db:
+    image: postgres:16-alpine
+    environment:
+      POSTGRES_USER: pste
+      POSTGRES_PASSWORD: changeme
+      POSTGRES_DB: pste
+    volumes:
+      - pg-data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U pste"]
+      interval: 5s
+      retries: 10
+
+volumes:
+  pg-data:
