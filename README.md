@@ -5,7 +5,7 @@
 [![pste on PyPI](https://img.shields.io/pypi/v/pste?label=pste)](https://pypi.org/project/pste/)
 [![License](https://img.shields.io/github/license/crognlie/pste)](LICENSE)
 
-A self-hosted pastebin with a CLI client. Sprunge-inspired — pipe text in, get a URL back. Supports syntax highlighting, single-view pastes, expiry, and multiple storage backends (SQLite, PostgreSQL, GCS).
+A self-hosted pastebin with a CLI client. Inspired by [sprunge](https://github.com/rupa/sprunge) — pipe text in, get a URL back. Supports syntax highlighting, single-view pastes, expiry, and multiple storage backends (SQLite, PostgreSQL, GCS).
 
 **GitHub:** [crognlie/pste](https://github.com/crognlie/pste) · **Docker:** `ghcr.io/crognlie/pste:latest`
 
