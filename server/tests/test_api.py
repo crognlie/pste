@@ -368,8 +368,11 @@ def test_get_unknown_lang_query_falls_back_to_text(client, make_key):
 
 
 def test_highlight_style_env_var(client, make_key, monkeypatch):
+    from pygments.formatters import HtmlFormatter
     import pste_server.main as m
-    monkeypatch.setattr(m, "HIGHLIGHT_STYLE", "github-dark")
+    dark_fmt = HtmlFormatter(style="github-dark", lineanchors="n", linenos="table")
+    monkeypatch.setattr(m, "_formatter", dark_fmt)
+    monkeypatch.setattr(m, "_style_defs", dark_fmt.get_style_defs(".highlight"))
     key = make_key()
     paste_id = _create_paste(client, key, content="print('hi')")
     r = client.get(f"/{paste_id}?python")
@@ -602,16 +605,18 @@ def test_validate_expires_at_invalid_format():
 def test_ratelimit_bucket_popleft():
     """Sliding window prunes old entries from the bucket."""
     from collections import deque
+    from collections import defaultdict
     from pste_server.ratelimit import _check, WINDOW_SECONDS
 
-    bucket = deque()
+    buckets = defaultdict(deque)
+    ip = "1.2.3.4"
     old_time = 0.0  # ancient timestamp, well outside the window
-    bucket.append(old_time)
+    buckets[ip].append(old_time)
 
     now = WINDOW_SECONDS + 10.0  # old entry should be pruned
-    result = _check(bucket, now)
+    result = _check(buckets, ip, now)
     assert result is True
-    assert old_time not in bucket  # popleft was called
+    assert old_time not in buckets[ip]  # popleft was called
 
 
 def test_bump_id_length_when_threshold_reached(db_engine):

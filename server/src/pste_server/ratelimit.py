@@ -40,13 +40,17 @@ def _client_ip(request) -> str:
     return direct or "unknown"
 
 
-def _check(bucket: deque, now: float) -> bool:
+def _check(buckets: dict, ip: str, now: float) -> bool:
+    bucket = buckets[ip]
     cutoff = now - WINDOW_SECONDS
     while bucket and bucket[0] < cutoff:
         bucket.popleft()
     if len(bucket) >= RATE_LIMIT:
         return False
-    bucket.append(now)
+    if not bucket:
+        # All prior requests have aged out — evict the stale key before re-adding
+        del buckets[ip]
+    buckets[ip].append(now)
     return True
 
 
@@ -57,8 +61,8 @@ def is_allowed(request) -> bool:
     now = datetime.now(timezone.utc).timestamp()
     method = request.method.upper()
     with _lock:
-        bucket = _get_buckets[ip] if method in ("GET", "HEAD") else _post_buckets[ip]
-        return _check(bucket, now)
+        buckets = _get_buckets if method in ("GET", "HEAD") else _post_buckets
+        return _check(buckets, ip, now)
 
 
 def reset():

@@ -31,6 +31,9 @@ BASE_URL = os.environ.get("BASE_URL", "http://localhost:8000").rstrip("/")
 _DARK_MODE = os.environ.get("DARK_MODE", "").lower() in ("1", "true", "yes")
 HIGHLIGHT_STYLE = os.environ.get("HIGHLIGHT_STYLE", "github-dark" if _DARK_MODE else "default")
 
+_formatter = HtmlFormatter(style=HIGHLIGHT_STYLE, lineanchors="n", linenos="table")
+_style_defs = _formatter.get_style_defs(".highlight")
+
 
 @asynccontextmanager
 async def lifespan(app: FastAPI):
@@ -75,12 +78,10 @@ def _render_highlighted(content: str, lang: str, headers: dict | None = None) ->
         lexer = get_lexer_by_name(lang)
     except ClassNotFound:
         lexer = get_lexer_by_name("text")
-    formatter = HtmlFormatter(style=HIGHLIGHT_STYLE, lineanchors="n", linenos="table")
-    code_html = highlight(content, lexer, formatter)
-    style_defs = formatter.get_style_defs(".highlight")
+    code_html = highlight(content, lexer, _formatter)
     full_html = (
         "<!DOCTYPE html><html><head><meta charset='UTF-8'><style>"
-        f"{style_defs}"
+        f"{_style_defs}"
         # Line numbers are in a separate column — suppress selection so
         # Ctrl-A copies only the paste content, not the line numbers.
         " td.linenos { user-select: none; -webkit-user-select: none; }"
@@ -320,6 +321,14 @@ async def create_paste(
                     storage.delete(paste_id, gcs_key)
                 except Exception:
                     pass
+        except Exception:
+            db.rollback()
+            if gcs_key is not None:
+                try:
+                    storage.delete(paste_id, gcs_key)
+                except Exception:
+                    pass
+            raise
     else:
         raise HTTPException(status_code=500, detail="Could not generate unique ID")
 

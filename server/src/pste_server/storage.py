@@ -21,7 +21,9 @@ class SqlStorage(StorageBackend):
         return None
 
     def retrieve(self, paste_id: str, gcs_key: str | None, db_content: str | None) -> str:
-        return db_content or ""
+        if db_content is None:
+            raise ValueError(f"paste {paste_id!r} has no content in DB")
+        return db_content
 
 
 class GcsStorage(StorageBackend):
