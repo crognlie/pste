@@ -11,6 +11,8 @@ A self-hosted pastebin with a CLI client. Inspired by [sprunge](https://github.c
 
 > Looking for a self-hosted sprunge alternative, a lightweight pastebin server, or a command-line paste tool? This is it.
 
+![pste web UI](docs/screenshot.png)
+
 ## Why
 
 Sprunge was the perfect pastebin — pipe in, get a URL, done. For years after it went down I was still reaching for it regularly. Running something that lightweight as a public service isn't economically viable, but hosting it yourself costs almost nothing. This is that: no GUI cruft, no accounts, just a URL you can share.
