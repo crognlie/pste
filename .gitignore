@@ -8,3 +8,5 @@ dist/
 *.egg
 .pytest_cache/
 build/
+*.coverage
+.coverage

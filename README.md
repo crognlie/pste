@@ -13,7 +13,24 @@ A self-hosted pastebin with a CLI client. Sprunge-inspired — pipe text in, get
 
 ## Why
 
-Sprunge was the perfect pastebin — pipe in, get a URL, done. When it went down I kept reaching for it out of habit for years. Running something that lightweight as a public service isn't economically viable, but hosting it yourself costs almost nothing. This is that: no GUI cruft, no accounts, just a URL you can share.
+Sprunge was the perfect pastebin — pipe in, get a URL, done. For years after it went down I was still reaching for it regularly. Running something that lightweight as a public service isn't economically viable, but hosting it yourself costs almost nothing. This is that: no GUI cruft, no accounts, just a URL you can share.
+
+## Examples
+
+```
+~$ echo "hello world" | pste
+https://pste.example.com/AB1234
+~$ pste AB1234
+hello world
+~$ echo "hello" | pste -s
+https://pste.example.com/AB1235        # only viewable once
+~$ echo "hello" | pste -e 7D
+https://pste.example.com/AB1236        # expires in 7 days
+~$ pste -l go < main.go
+https://pste.example.com/AB1237?go
+~$ pste -l < data.json
+https://pste.example.com/AB1238?json   # auto-detected
+```
 
 ## Quick start
 
@@ -21,26 +38,18 @@ Sprunge was the perfect pastebin — pipe in, get a URL, done. When it went down
 # Server — Docker (recommended)
 docker run -e BASE_URL=http://localhost:8000 -p 8000:8000 -v pste-data:/app/data ghcr.io/crognlie/pste:latest
 
-# Server — from source
-cd server
-pip install -e ".[postgresql]"
+# Server — PyPI
+pip install pste-server
 BASE_URL=http://localhost:8000 pste-server
 
 # Client
-cd client
-pip install -e .
+pip install pste
 export PSTE_URL="http://localhost:8000/?key=YOUR_API_KEY"  # from: pste-admin key add
-echo "hello world" | pste          # create paste → prints URL
-pste AB1234                         # fetch paste by ID
-echo "hello" | pste -s             # single-view paste
-echo "hello" | pste -e 7D          # expires in 7 days
-pste -l go < main.go               # syntax highlighting
-pste -l < data.json                # auto-detect language
 ```
 
 ## Server setup
 
-Reverse proxy configs and compose examples are in `server/examples/` (Caddy, nginx, Cloudflare Tunnel, GCP/AWS/Azure).
+Reverse proxy configs and compose examples are in [server/examples](https://github.com/crognlie/pste/tree/main/server/examples) (Caddy, nginx, Cloudflare Tunnel, GCP/AWS/Azure).
 
 Key env vars:
 
