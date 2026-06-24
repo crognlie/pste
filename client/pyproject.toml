@@ -4,7 +4,7 @@ build-backend = "hatchling.build"
 
 [project]
 name = "pste"
-version = "0.1.0"
+version = "0.2.0"
 description = "Command-line client for pste, a self-hosted paste server inspired by sprunge"
 readme = "README.md"
 license = {text = "MIT"}
