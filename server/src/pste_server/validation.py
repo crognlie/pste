@@ -12,7 +12,8 @@ _UNIT_SECONDS = {"H": 3600, "D": 86400, "W": 7 * 86400, "M": 60}
 
 
 def validate_content(content: str) -> str:
-    """Raises ValueError if content is invalid; returns content."""
+    """Raises ValueError if content is invalid; returns content with normalized line endings."""
+    content = content.replace("\r\n", "\n").replace("\r", "\n")
     try:
         encoded = content.encode("utf-8")
     except UnicodeEncodeError as e:
